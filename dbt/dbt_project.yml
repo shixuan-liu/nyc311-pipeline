@@ -1,0 +1,10 @@
+name: nyc311
+version: "1.0.0"
+profile: nyc311                  # [1] which connection in profiles.yml to use
+
+models:
+  nyc311:
+    staging:
+      +materialized: view        # [2] staging = views, no storage
+    marts:
+      +materialized: table       # [3] marts = real tables, fast for dashboards

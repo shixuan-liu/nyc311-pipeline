@@ -1,0 +1,13 @@
+version: 2
+
+models:
+  - name: stg_311_requests
+    columns:
+      - name: request_id
+        tests:
+          - unique               # [1]
+          - not_null
+      - name: borough
+        tests:
+          - accepted_values:     # [2]
+              values: ['MANHATTAN', 'BROOKLYN', 'QUEENS', 'BRONX', 'STATEN ISLAND','Unspecified']

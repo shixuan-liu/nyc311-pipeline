@@ -1,0 +1,7 @@
+version: 2
+
+sources:
+  - name: nyc311                 # [1]
+    schema: nyc311_analytics
+    tables:
+      - name: requests           # [2] the curated table created in Athena
