@@ -1,7 +1,12 @@
 .venv/
 __pycache__/
 *.pyc
+.idea/
+.DS_Store
+data/
+
+# dbt
 dbt/target/
 dbt/logs/
 dbt/dbt_packages/
-data/
+dbt/.user.yml

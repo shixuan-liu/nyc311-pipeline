@@ -6,6 +6,7 @@ Usage:
 import argparse
 import json
 import time
+from datetime import date, timedelta
 
 import boto3
 import requests
@@ -33,7 +34,9 @@ def get_json(params: dict) -> list[dict]:
 
 
 def day_filter(day: str) -> str:
-    return f"created_date between '{day}T00:00:00' and '{day}T23:59:59'"
+    """Half-open range [day, next day), so records in the last second of the day aren't missed."""
+    next_day = (date.fromisoformat(day) + timedelta(days=1)).isoformat()
+    return f"created_date >= '{day}T00:00:00' and created_date < '{next_day}T00:00:00'"
 
 
 def fetch_page(day: str, offset: int) -> list[dict]:

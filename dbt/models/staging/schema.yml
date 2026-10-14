@@ -5,9 +5,9 @@ models:
     columns:
       - name: request_id
         tests:
-          - unique               # [1]
+          - unique
           - not_null
       - name: borough
         tests:
-          - accepted_values:     # [2]
+          - accepted_values:
               values: ['MANHATTAN', 'BROOKLYN', 'QUEENS', 'BRONX', 'STATEN ISLAND','Unspecified']
