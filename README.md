@@ -16,6 +16,16 @@ dbt:  stg_311_requests ─┐
 
 Loaded for 2026-01-01 → 2026-09-30 (273 days, 2.99M requests). About 10,000 requests a day. One day of raw JSON is ~44.5 MB; the same day as Parquet is ~1.1 MB.
 
+## Dashboard
+
+![SLA compliance dashboard](docs/dashboard.jpg)
+
+`dashboard/app.py` is a Streamlit app with three views: the monthly compliance trend, the lowest-compliance agency and complaint types, and a drill-down for any one type.
+
+**It reads a CSV, not Athena.** `export_mart.py` exports `mart_sla_compliance` (1,610 rows) to `dashboard/data/`. The public app then needs no AWS credentials, and a page view costs no Athena query. The mart is a monthly report, so re-exporting after each monthly build keeps it current.
+
+**Rates are re-aggregated, never averaged.** When a view combines months or agencies, it sums the met and decided counts and divides again. Averaging `pct_met` across rows would weight a group of 10 requests the same as one of 10,000.
+
 ## Layout
 
 | Path | What it does |
@@ -29,6 +39,8 @@ Loaded for 2026-01-01 → 2026-09-30 (273 days, 2.99M requests). About 10,000 re
 | `dbt/models/staging/stg_sla_targets.sql` | Parses SLA text ("8 hours", "3 days") into hours, one row per complaint type and descriptor |
 | `dbt/models/core/fct_service_requests.sql` | One row per request: its SLA, and whether it met it as of a fixed date |
 | `dbt/models/marts/mart_sla_compliance.sql` | SLA compliance per agency, complaint type and month created, with the month-over-month change |
+| `export_mart.py` | Exports the SLA mart from Athena to `dashboard/data/` |
+| `dashboard/app.py` | Streamlit dashboard over the exported mart |
 | `dbt/models/marts/` (others) | Daily volume, response times and HPD housing complaints by ZIP |
 
 ## Design decisions
@@ -146,7 +158,9 @@ python ingest.py --date 2026-09-20
 python transform.py --date 2026-09-20
 python backfill.py --start 2026-01-01 --end 2026-09-30
 
-cd dbt && dbt seed --profiles-dir . && dbt build --profiles-dir .
+cd dbt && dbt seed --profiles-dir . && dbt build --profiles-dir . && cd ..
+python export_mart.py
+streamlit run dashboard/app.py
 ```
 
-Requires AWS credentials with access to the lake bucket and Athena workgroup named in the scripts and `dbt/profiles.yml`.
+The pipeline and export require AWS credentials with access to the lake bucket and Athena workgroup named in the scripts and `dbt/profiles.yml`.

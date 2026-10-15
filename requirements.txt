@@ -4,3 +4,4 @@ pyarrow==25.0.1
 requests==2.34.2
 dbt-core==1.9.11
 dbt-athena-community==1.9.5
+streamlit
