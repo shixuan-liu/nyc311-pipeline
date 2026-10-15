@@ -1,0 +1,15 @@
+version: 2
+
+models:
+  - name: fct_service_requests
+    description: "One row per 311 request, with its official SLA and outcome as of var('as_of_date')."
+    columns:
+      - name: request_id
+        tests:
+          - unique
+          - not_null
+      - name: sla_outcome
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['met', 'missed', 'missed_open', 'pending', 'no_sla', 'not_tracked', 'invalid']

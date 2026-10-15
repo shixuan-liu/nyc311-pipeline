@@ -2,9 +2,24 @@ name: nyc311
 version: "1.0.0"
 profile: nyc311                  # which connection in profiles.yml to use
 
+vars:
+  as_of_date: "2026-10-11"       # all partitions (re)ingested after this; the API lags ~2 days
+
 models:
   nyc311:
     staging:
       +materialized: view        # staging = views, no storage
+    core:
+      +materialized: table       # core = one row per business entity, reused by marts
     marts:
       +materialized: table       # marts = real tables, fast for dashboards
+
+seeds:
+  nyc311:
+    sla_official:
+      +column_types:             # keep every column as text; parsing happens in stg_sla_targets
+        agency: varchar
+        problem: varchar
+        problem_details: varchar
+        additional_details: varchar
+        sla: varchar

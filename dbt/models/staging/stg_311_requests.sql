@@ -5,6 +5,8 @@ select
     agency,
     complaint_type,
     descriptor,
+    lower(trim(complaint_type))                    as complaint_type_key,   -- join keys for stg_sla_targets
+    lower(trim(descriptor))                        as descriptor_key,
     incident_zip,
     status,
     borough,
